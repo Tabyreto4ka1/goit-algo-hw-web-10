@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Quoets</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"/>
+</head>
+<body>
+
+<main class="container">
+    <nav style="margin-bottom: 20px; border-bottom: 2px solid; padding-left: 30px">
+
+        <ul>
+            {% if request.path != "/" %}
+            <li><a href="{% url 'quotes:main' %}" role="button">Go to the main page</a></li>
+            {% endif %} 
+
+            {% if request.path != "/quote/" %}
+            <li><a href="{% url 'quotes:quote' %}" role="button">Add Quote</a></li>
+            {% endif %}
+
+            {% if request.path != "/author/" %}
+            <li><a href="{% url 'quotes:author' %}" role="button">Add Author</a></li>
+            {% endif %}
+        </ul>
+        <ul>
+            {% if user.is_authenticated %}
+            <li>Welcome {{user.username}} !</li>
+            <li><a href="{% url 'users:logout' %}" role="button">Log out</a></li>
+            <br>
+            <li><a href ="{% url 'quotes:scrap' %}" role="button">Scrap</a></li>
+            {% else %}
+            <li><a href="{% url 'users:signup' %}" role="button">Sign up</a></li>
+            <li><a href="{% url 'users:login' %}" role="button">Log in</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+</main>
+
+</body>
+</html>
