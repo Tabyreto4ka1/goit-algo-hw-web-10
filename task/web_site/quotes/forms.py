@@ -14,7 +14,7 @@ class AuthorForm(ModelForm):
     fullname=CharField(min_length=5,widget=TextInput())
     born_date=DateField(input_formats=['%B %d, %Y'])
     born_location=CharField(max_length=200)
-    description=TextInput()
+    description=CharField(widget=TextInput())
 
     class Meta:
         model=Author

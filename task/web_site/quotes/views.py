@@ -24,7 +24,7 @@ def main(request):
     return render(request, 'quotes/index.html', {'quotes': quotes,'ten_tags':ten_tags})
 
 def tag(request, tag):
-    quotes_tag=Quote.objects.filter(tags__contains=tag)
+    quotes_tag=Quote.objects.filter(tags__contains=[tag])
     return render (request, 'quotes/tag.html', {"tag":tag, "quotes_tag":quotes_tag})
 
 @login_required
@@ -74,16 +74,11 @@ def scrap(request):
         "description": author["description"],})
 
     for quote in quotes_json:
-        try:
-            Quote.objects.get_or_create(
+        Quote.objects.get_or_create(
         quote=quote["quote"],
         author=Author.objects.get(fullname=quote["author"]),
         defaults={"tags": quote["tags"],})
-        except Author.DoesNotExist:
-            Quote.objects.get_or_create(
-        quote=quote["quote"],
-        author=Author.objects.get(fullname="Alexandre Dumas-fils"),
-        defaults={"tags": quote["tags"],})
+
 
     return redirect(to='quotes:main')
 

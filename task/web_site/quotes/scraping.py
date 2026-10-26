@@ -3,13 +3,21 @@ from bs4 import BeautifulSoup
 from json import dump
 
 
-def quotes_parser(soup):            #Парсинг для цитат
+def quotes_parser(soup,url):            #Парсинг для цитат
     tags_all=soup.find_all("div", class_="tags")
     tags=[]
+
     for tags_one in tags_all:
         tags_one_text=[tag.text for tag in tags_one.find_all("a", class_="tag")]
         tags.append(tags_one_text)
-    authors=[author.text for author  in soup.find_all("small", class_="author")]
+
+    authors=[]
+    authors_all=soup.find_all("small", class_="author")
+    for author in authors_all:  #знаходимо відносний шлях до кожного автору і збраємо в абсолютний
+        author_rel_url=author.find_next("a")["href"]    
+        author_request=requests.get(url+author_rel_url)
+        author_soup=BeautifulSoup(author_request.text, "lxml")
+        authors.append(author_soup.find("h3", class_="author-title").text)
     quotes=[quote.text for quote in soup.find_all("span", class_="text")]
     quotes_json=[{"tags":t, "author": a, "quote": q} for t,a,q in zip(tags, authors, quotes)]
     return(quotes_json)
@@ -21,7 +29,7 @@ def quotes(url):        #Переходи на іншу сторнінку та 
     while True:
         request = requests.get(next_url)
         soup = BeautifulSoup(request.text, "lxml")
-        quotes_json.extend(quotes_parser(soup))
+        quotes_json.extend(quotes_parser(soup,url))
         try:
             next=soup.find("li", class_="next").find_next("a")["href"]
             next_url=url+next
